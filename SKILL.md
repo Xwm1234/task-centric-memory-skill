@@ -35,6 +35,7 @@ python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
   --summary "<精简后的最终结论或结果>"
 ```
 > 💡 **ID 来源**：ID 来自之前 `add` 命令的返回值，或执行 `search` 后提取结果中的 `id` 字段。
+> ⚠️ **重名处理**：若存在重名任务（可能在不同分类下），脚本会更新找到的第一个。**强烈建议优先使用 ID 更新**以确保精准。
 
 ### 3. 优先检索索引 (ON QUERY)
 当用户问及历史任务细节时（如"我们上次怎么修那个 bug 的？"），**第一步必须是搜索引**：
@@ -48,6 +49,8 @@ python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
 ## 📁 脚本路径
 * `~/.hermes/skills/task-centric-memory/references/indexer.py`
 * `~/.hermes/task-index.json`
+
+> 💻 **跨平台说明**：脚本使用 Python 标准路径库，在 **Windows** 下 `~` 会被自动解析为用户目录，命令格式可直接运行。
 ## ⚠️ Instructions
 1. Always load this skill when handling complex, multi-turn requests.
 2. When the user asks "What was the status of X?" -> Call `search`.

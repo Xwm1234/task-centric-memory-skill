@@ -117,6 +117,7 @@ def search_tasks(query, data):
                 query in task["summary"].lower() or 
                 any(query in k.lower() for k in task.get("keywords", []))):
                 results.append({
+                    "id": task["id"],
                     "category": display_name,
                     "task_name": task["name"],
                     "status": task["status"],
