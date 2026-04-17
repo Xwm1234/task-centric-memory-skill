@@ -46,11 +46,12 @@ By default, AI agents store memory linearly (chronologically). As conversations 
 
 ## 🧠 How It Works (For Agents)
 
-When loaded, this skill instructs the agent to:
-1.  **Intercept** the start of a new topic.
-2.  **Run** `indexer.py --action add` to log the task in `~/.hermes/task-index.json`.
+This skill implements a **Mandatory Workflow Protocol** for the agent:
+1.  **Intercept** the start of a new topic (New Topic).
+2.  **Run** `indexer.py --action add` to log the task. **Strictly required** by SKILL.md instructions.
 3.  **Update** status to `Completed` when the task is finished, triggering compression.
-4.  **Search** the index first when asked questions, bypassing slow history scanning.
+4.  **Search** the index first when asked questions (`ON QUERY`), bypassing slow history scanning.
+5.  **Error Recovery**: The script now includes explicit error handling (`sys.exit(1)`) if the index file cannot be saved, preventing silent failures.
 
 ### Example Index Structure
 ```json

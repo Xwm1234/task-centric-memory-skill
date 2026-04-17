@@ -3,48 +3,48 @@ name: task-centric-memory
 description: Universal Task-Centric Memory System - Dynamically categorizes, indexes, and compresses conversation memory based on task status.
 ---
 
-# Task-Centric Memory System (任务核心记忆)
+# Task-Centric Memory System (强制工具调用协议)
 
-## 🌍 Overview
-A universal memory management skill that transforms the AI's linear conversation history into a structured, task-oriented index.
-Instead of a chaotic timeline, this skill organizes memory into **Task Buckets** grouped by **Business Domains** (automatically detected).
+## ⚠️ 强制工作流 (MANDATORY WORKFLOW)
+每当用户**开启新话题**、**切换任务领域**或**提出复杂需求**时，你**必须**调用 `execute_code` 运行 `references/indexer.py`。
 
-## 🧠 Core Logic (For Agent)
+### 1. 新任务自动登记 (ON NEW TOPIC)
+当检测到用户开始一个新任务时，**必须**执行 `add`：
+```bash
+python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
+  --action add \
+  --category "<英文小写领域名>" \
+  --name "<简短任务名>" \
+  --summary "<当前任务目标>" \
+  --keywords "<关键词1>,<关键词2>"
+```
+**示例**：用户说"帮我修一下失忆脚本"。
+* `--category`: `devops`
+* `--name`: `修复防失忆脚本`
+* `--summary`: `修改 recover_session.py，使用 ended_at IS NOT NULL 逻辑`
 
-### 1. Auto-Classification (Zero-Config)
-Do NOT assume any fixed categories. Analyze the user's input to detect the domain (e.g., "Coding", "Finance", "Marketing", "Personal").
-- If the domain exists in the index -> Add task there.
-- If the domain is new -> **Automatically create** a new domain bucket in the JSON index.
-
-### 2. Task Lifecycle & Compression
-- **🔴 In-Progress**: Keep raw details, errors, and intermediate steps in the summary. DO NOT compress.
-- **🟢 Completed**: Compress into a high-density summary (Result + Key Data + File Paths). Purge noise.
-
-### 3. Tool Usage
-Use `execute_code` to run `references/indexer.py`.
-- `add`: Add a new task or update an existing one.
-- `search`: Find tasks by keywords.
-
-## 📂 Index Structure (JSON)
-Stored at `~/.hermes/task-index.json` by default.
-
-```json
-{
-  "coding_project": {
-    "display_name": "Coding Project",
-    "tasks": [
-      { "id": "task_...", "name": "...", "status": "In-Progress", "summary": "..." }
-    ]
-  },
-  "finance_analysis": {
-    "display_name": "Finance Analysis",
-    "tasks": [
-      { "id": "task_...", "name": "...", "status": "Completed", "summary": "..." }
-    ]
-  }
-}
+### 2. 任务完成压缩 (ON COMPLETION)
+任务结束时，**必须**执行 `update`：
+```bash
+python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
+  --action update \
+  --id <任务ID> \
+  --status Completed \
+  --summary "<精简后的最终结论或结果>"
 ```
 
+### 3. 优先检索索引 (ON QUERY)
+当用户问及历史任务细节时（如"我们上次怎么修那个 bug 的？"），**第一步必须是搜索引**：
+```bash
+python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
+  --action search \
+  --query "<关键词>"
+```
+**禁止**直接搜索原始聊天记录文件。只有索引无结果时，才回退到 `session_search`。
+
+## 📁 脚本路径
+* `~/.hermes/skills/task-centric-memory/references/indexer.py`
+* `~/.hermes/task-index.json`
 ## ⚠️ Instructions
 1. Always load this skill when handling complex, multi-turn requests.
 2. When the user asks "What was the status of X?" -> Call `search`.

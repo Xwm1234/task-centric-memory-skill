@@ -29,15 +29,20 @@ def load_index():
 def save_index(data):
     """Saves the index with a backup."""
     # Ensure directory exists
-    os.makedirs(os.path.dirname(INDEX_PATH), exist_ok=True)
-    
-    backup = INDEX_PATH + ".bak"
-    if os.path.exists(INDEX_PATH):
-        with open(INDEX_PATH, 'r') as src, open(backup, 'w') as dst:
-            dst.write(src.read())
-    
-    with open(INDEX_PATH, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    try:
+        os.makedirs(os.path.dirname(INDEX_PATH), exist_ok=True)
+        
+        backup = INDEX_PATH + ".bak"
+        if os.path.exists(INDEX_PATH):
+            with open(INDEX_PATH, 'r') as src, open(backup, 'w') as dst:
+                dst.write(src.read())
+        
+        with open(INDEX_PATH, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+            
+    except Exception as e:
+        print(f"ERROR: Failed to save index -> {str(e)}", file=sys.stderr)
+        sys.exit(1)
 
 def generate_id(name):
     """Generates a unique task ID."""
