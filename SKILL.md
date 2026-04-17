@@ -18,6 +18,8 @@ python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
   --summary "<当前任务目标>" \
   --keywords "<关键词1>,<关键词2>"
 ```
+> ⚠️ **如果路径不存在**：请运行 `find ~/.hermes -name "indexer.py"` 定位脚本路径。
+> 💡 **执行后**：必须将返回的 JSON 结果简要反馈给用户（例如："✅ 已将任务 [xxx] 记录到记忆索引，ID 为 [task_id]，后续可随时查询。"）。
 **示例**：用户说"帮我修一下失忆脚本"。
 * `--category`: `devops`
 * `--name`: `修复防失忆脚本`
@@ -32,6 +34,7 @@ python3 ~/.hermes/skills/task-centric-memory/references/indexer.py \
   --status Completed \
   --summary "<精简后的最终结论或结果>"
 ```
+> 💡 **ID 来源**：ID 来自之前 `add` 命令的返回值，或执行 `search` 后提取结果中的 `id` 字段。
 
 ### 3. 优先检索索引 (ON QUERY)
 当用户问及历史任务细节时（如"我们上次怎么修那个 bug 的？"），**第一步必须是搜索引**：

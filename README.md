@@ -51,7 +51,7 @@ This skill implements a **Mandatory Workflow Protocol** for the agent:
 2.  **Run** `indexer.py --action add` to log the task. **Strictly required** by SKILL.md instructions.
 3.  **Update** status to `Completed` when the task is finished, triggering compression.
 4.  **Search** the index first when asked questions (`ON QUERY`), bypassing slow history scanning.
-5.  **Error Recovery**: The script now includes explicit error handling (`sys.exit(1)`) if the index file cannot be saved, preventing silent failures.
+5.  **Error Recovery & Feedback**: The script raises explicit errors (`sys.exit(1)`) if the index cannot be saved, ensuring the agent receives failure feedback. **The agent MUST report the success/failure result back to the user after every execution.**
 
 ### Example Index Structure
 ```json

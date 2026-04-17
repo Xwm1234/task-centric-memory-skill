@@ -4,6 +4,7 @@ Universal Task-Centric Memory Indexer
 Dynamically manages memory categories and task states.
 """
 import os
+import re
 import json
 import sys
 import argparse
@@ -45,10 +46,13 @@ def save_index(data):
         sys.exit(1)
 
 def generate_id(name):
-    """Generates a unique task ID."""
-    clean_name = "".join(c for c in name[:10] if c.isalnum())
+    """Generates a unique task ID. Supports Chinese, letters, and digits."""
+    # Keep letters, digits, and Chinese characters (\u4e00-\u9fff)
+    clean = re.sub(r'[^\w\u4e00-\u9fff]', '', name)[:6]
+    if not clean:
+        clean = "task"
     date_str = datetime.now().strftime("%y%m%d")
-    return f"task_{clean_name}_{date_str}"
+    return f"{clean}_{date_str}"
 
 def add_task(category, name, summary, keywords, data):
     """Adds a task, auto-creating category if needed."""
@@ -136,7 +140,8 @@ def main():
     data = load_index()
 
     if args.action == "add":
-        res = add_task(args.category, args.name, args.summary, [k.strip() for k in args.keywords.split(",")], data)
+        kw_list = [k.strip() for k in args.keywords.split(",") if k.strip()]
+        res = add_task(args.category, args.name, args.summary, kw_list, data)
     elif args.action == "update":
         res = update_task(args.id or args.name, args.status, args.summary, data)
     elif args.action == "search":
